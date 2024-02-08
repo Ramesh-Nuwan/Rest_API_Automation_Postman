@@ -1,0 +1,485 @@
+{
+	"info": {
+		"_postman_id": "3cc43e58-cef6-49b8-a265-097baade19ad",
+		"name": "Restful API Dev",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19467797"
+	},
+	"item": [
+		{
+			"name": "List of All Objects",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"jsonSchema Object test\", function(){",
+							"  const schemaObject = {",
+							"   \"id\": \"\",",
+							"   \"name\": \"\",",
+							"   \"data\": {}",
+							"};",
+							"  pm.response.to.have.jsonSchema(schemaObject);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/objects",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"objects"
+					]
+				},
+				"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+			},
+			"response": []
+		},
+		{
+			"name": "List of Objects By Ids",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test(\"Object count should be equal to 3\", function(){",
+							"    pm.expect(pm.response.json()).to.have.length(3);",
+							"})",
+							"",
+							"pm.test(\"jsonSchema Object test\", function(){",
+							"  const schemaObject = {",
+							"   \"id\": \"\",",
+							"   \"name\": \"\",",
+							"   \"data\": {}",
+							"};",
+							"  pm.response.to.have.jsonSchema(schemaObject);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/objects?id={{obj_1}}&id={{obj_2}}&id={{obj_3}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"objects"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "{{obj_1}}"
+						},
+						{
+							"key": "id",
+							"value": "{{obj_2}}"
+						},
+						{
+							"key": "id",
+							"value": "{{obj_3}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Single Object",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"    console.log(pm.collectionVariables.get(\"update_name\"));",
+							"})",
+							"",
+							"/*",
+							"if (pm.response.code==404) {",
+							"  pm.test('Status code is 404', function () {",
+							"    const responseJson = pm.response.json();",
+							"    var ref = pm.collectionVariables.get(\"id\");",
+							"      console.log(ref);",
+							"      pm.expect(responseJson.error).to.equal(\"Oject with id=id=\" + ref + \" was not found.\")",
+							"",
+							"    pm.response.to.have.status(404);",
+							"    });",
+							"} ",
+							"*/",
+							"",
+							"pm.test(\"jsonSchema Object test\", function(){",
+							"  const schemaObject = {",
+							"   \"id\": \"\",",
+							"   \"name\": \"\",",
+							"   \"data\": {}",
+							"};",
+							"  pm.response.to.have.jsonSchema(schemaObject);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/objects/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"objects",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"    var responseBody = pm.response.json();",
+							"    var createdItemId = responseBody.id;",
+							"    pm.collectionVariables.set(\"created_item\", createdItemId);",
+							"});",
+							"",
+							"pm.test(\"Response has the correct schema\", function () {",
+							"    const schema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"id\": { \"type\": \"string\" },",
+							"            \"name\": { \"type\": \"string\" },",
+							"            \"data\": {",
+							"                \"type\": \"object\",",
+							"                \"properties\": {",
+							"                    \"year\": { \"type\": \"string\" },",
+							"                    \"price\": { \"type\": \"string\" },",
+							"                    \"CPU model\": { \"type\": \"string\" },",
+							"                    \"Hard disk size\": { \"type\": \"string\" }",
+							"                },",
+							"                \"required\": [\"year\", \"price\", \"CPU model\", \"Hard disk size\"]",
+							"            },",
+							"            \"createdAt\": { \"type\": \"string\", \"format\": \"date-time\" }",
+							"        },",
+							"        \"required\": [\"id\", \"name\", \"data\", \"createdAt\"]",
+							"    };",
+							"",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test(\"Added object's details is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"item_name\"));",
+							"    pm.expect(jsonData.data['year']).to.eql(pm.collectionVariables.get(\"item_year\"));",
+							"    pm.expect(jsonData.data['price']).to.eql(pm.collectionVariables.get(\"item_price\"));",
+							"    pm.expect(jsonData.data['CPU model']).to.eql(pm.collectionVariables.get(\"cpu_model\"));",
+							"    pm.expect(jsonData.data['Hard disk size']).to.eql(pm.collectionVariables.get(\"hard_disk_size\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"name\": \"{{item_name}}\",\n   \"data\": {\n      \"year\": \"{{item_year}}\",\n      \"price\": \"{{item_price}}\",\n      \"CPU model\": \"{{cpu_model}}\",\n      \"Hard disk size\": \"{{hard_disk_size}}\"\n   }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/objects",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"objects"
+					]
+				},
+				"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Update data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Successful PUT request', function () {",
+							"    pm.response.to.have.status(200);",
+							"})",
+							"",
+							"pm.test(\"Response has the correct schema\", function () {",
+							"    const schema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"id\": { \"type\": \"string\" },",
+							"            \"name\": { \"type\": \"string\" },",
+							"            \"data\": {",
+							"                \"type\": \"object\",",
+							"                \"properties\": {",
+							"                    \"year\": { \"type\": \"string\" },",
+							"                    \"price\": { \"type\": \"string\" },",
+							"                    \"CPU model\": { \"type\": \"string\" },",
+							"                    \"Hard disk size\": { \"type\": \"string\" },",
+							"                    \"color\": { \"type\": \"string\" }",
+							"                },",
+							"                \"required\": [\"year\", \"price\", \"CPU model\", \"Hard disk size\"]",
+							"            },",
+							"            \"updatedAt\": { \"type\": \"string\", \"format\": \"date-time\" }",
+							"        },",
+							"        \"required\": [\"id\", \"name\", \"data\", \"updatedAt\"]",
+							"    };",
+							"",
+							"    pm.response.to.have.jsonSchema(schema);",
+							"});",
+							"",
+							"pm.test(\"Updated object's details is correct\", function () {",
+							"    var jsonData = pm.response.json();",
+							"",
+							"    pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"update_name\"));",
+							"    pm.expect(jsonData.data['year']).to.eql(pm.collectionVariables.get(\"update_year\"));",
+							"    pm.expect(jsonData.data['price']).to.eql(pm.collectionVariables.get(\"update_price\"));",
+							"    pm.expect(jsonData.data['CPU model']).to.eql(pm.collectionVariables.get(\"update_cpu_model\"));",
+							"    pm.expect(jsonData.data['Hard disk size']).to.eql(pm.collectionVariables.get(\"update_hard_disk_size\"));",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n   \"name\": \"{{update_name}}\",\n   \"data\": {\n      \"year\": \"{{update_year}}\",\n      \"price\": \"{{update_price}}\",\n      \"CPU model\": \"{{update_cpu_model}}\",\n      \"Hard disk size\": \"{{update_hard_disk_size}}\",\n      \"color\": \"silver\"\n   }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/objects/{{created_item}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"objects",
+						"{{created_item}}"
+					]
+				},
+				"description": "This is a PUT request and it is used to overwrite an existing piece of data. For instance, after you create an entity with a POST request, you may want to modify that later. You can do that using a PUT request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful PUT request typically returns a `200 OK`, `201 Created`, or `204 No Content` response code."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful DELETE request\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Successful DELETE message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Object with id = \"+pm.collectionVariables.get(\"created_item\")",
+							"    +\" has been deleted.\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/objects/{{created_item}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"objects",
+						"{{created_item}}"
+					]
+				},
+				"description": "This is a DELETE request, and it is used to delete data that was previously created via a POST request. You typically identify the entity being updated by including an identifier in the URL (eg. `id=1`).\n\nA successful DELETE request typically returns a `200 OK`, `202 Accepted`, or `204 No Content` response code."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://api.restful-api.dev"
+		},
+		{
+			"key": "id",
+			"value": "5"
+		},
+		{
+			"key": "obj_1",
+			"value": "4",
+			"type": "string"
+		},
+		{
+			"key": "obj_2",
+			"value": "5",
+			"type": "string"
+		},
+		{
+			"key": "obj_3",
+			"value": "6",
+			"type": "string"
+		},
+		{
+			"key": "item_name",
+			"value": "Apple MacBook Pro 17",
+			"type": "string"
+		},
+		{
+			"key": "item_year",
+			"value": "2020",
+			"type": "string"
+		},
+		{
+			"key": "item_price",
+			"value": "1558.50",
+			"type": "string"
+		},
+		{
+			"key": "cpu_model",
+			"value": "Intel Core i8",
+			"type": "string"
+		},
+		{
+			"key": "hard_disk_size",
+			"value": "500 GB",
+			"type": "string"
+		},
+		{
+			"key": "update_name",
+			"value": "UPDATE_Apple MacBook Pro",
+			"type": "string"
+		},
+		{
+			"key": "update_year",
+			"value": "2025",
+			"type": "string"
+		},
+		{
+			"key": "update_price",
+			"value": "9999.99",
+			"type": "string"
+		},
+		{
+			"key": "update_cpu_model",
+			"value": "UPDATE_Intel Core i8",
+			"type": "string"
+		},
+		{
+			"key": "update_hard_disk_size",
+			"value": "10 TB",
+			"type": "string"
+		},
+		{
+			"key": "created_item",
+			"value": "1562",
+			"type": "string"
+		},
+		{
+			"key": "variable_key",
+			"value": ""
+		}
+	]
+}
